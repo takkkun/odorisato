@@ -12,46 +12,59 @@ if (!useMicroCMS) {
   );
 }
 
-let postCache: Post[] | null = null;
+// Module-level caches: each value is fetched at most once per build, then
+// reused across every page render. Without this every page hits microCMS
+// for categories/notification etc., which dominates build time.
+let postsPromise: Promise<Post[]> | null = null;
+let categoriesPromise: Promise<Category[]> | null = null;
+let profilePromise: Promise<Profile> | null = null;
+let notificationPromise: Promise<SiteNotification> | null = null;
 
-async function loadAllPosts(): Promise<Post[]> {
-  if (postCache) return postCache;
-  if (useMicroCMS) {
-    postCache = await microcms.getAllPosts();
-  } else {
-    postCache = [...mockData.posts].sort(
+export async function getAllPosts(): Promise<Post[]> {
+  if (postsPromise) return postsPromise;
+  postsPromise = (async () => {
+    if (useMicroCMS) return microcms.getAllPosts();
+    return [...mockData.posts].sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-  }
-  return postCache;
+  })();
+  return postsPromise;
 }
 
 export async function getCategories(): Promise<Category[]> {
-  if (useMicroCMS) return microcms.getCategories();
-  return mockData.categories;
+  if (categoriesPromise) return categoriesPromise;
+  categoriesPromise = (async () => {
+    if (useMicroCMS) return microcms.getCategories();
+    return mockData.categories;
+  })();
+  return categoriesPromise;
 }
 
 export async function getProfile(): Promise<Profile> {
-  if (useMicroCMS) return microcms.getProfile();
-  return mockData.profile;
+  if (profilePromise) return profilePromise;
+  profilePromise = (async () => {
+    if (useMicroCMS) return microcms.getProfile();
+    return mockData.profile;
+  })();
+  return profilePromise;
 }
 
 export async function getNotification(): Promise<SiteNotification> {
-  if (useMicroCMS) return microcms.getNotification();
-  return mockData.notification;
-}
-
-export async function getAllPosts(): Promise<Post[]> {
-  return loadAllPosts();
+  if (notificationPromise) return notificationPromise;
+  notificationPromise = (async () => {
+    if (useMicroCMS) return microcms.getNotification();
+    return mockData.notification;
+  })();
+  return notificationPromise;
 }
 
 export async function getPostsByCategory(categoryName: string): Promise<Post[]> {
-  const all = await loadAllPosts();
+  const all = await getAllPosts();
   return all.filter((p) => p.category.name === categoryName);
 }
 
 export async function getPost(id: string): Promise<Post | undefined> {
-  const all = await loadAllPosts();
+  const all = await getAllPosts();
   return all.find((p) => p.id === id);
 }
 
