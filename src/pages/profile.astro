@@ -1,0 +1,50 @@
+---
+import Default from '../layouts/Default.astro';
+import { getProfile } from '../data/content';
+
+const profile = await getProfile();
+const paragraphs = profile.content
+  .split(/\n{2,}/)
+  .map((p) => p.trim())
+  .filter((p) => p.length > 0);
+---
+
+<Default title="profile">
+  <div id="profile">
+    <h2>profile</h2>
+    <p style="margin-bottom: 0">
+      佐藤おどり / odori sato<br />
+      連絡先: <span class="email"></span>
+    </p>
+    <ul>
+      <li class="pixiv">
+        <a href="http://pixiv.me/super_normal" class="line" target="_blank" rel="noopener">
+          pixiv: 812414
+        </a>
+      </li>
+      <li class="twitter">
+        <a href="https://twitter.com/_odori" class="line" target="_blank" rel="noopener">
+          twitter: @_odori
+        </a>
+      </li>
+      <li class="tumblr">
+        <a href="http://supernormal.tumblr.com/" class="line" target="_blank" rel="noopener">
+          tumblr
+        </a>
+      </li>
+    </ul>
+    <h2>works</h2>
+    {
+      paragraphs.map((p) => (
+        <p>
+          {p.split('\n').map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              {line}
+            </>
+          ))}
+        </p>
+      ))
+    }
+  </div>
+</Default>

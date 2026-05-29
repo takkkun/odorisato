@@ -1,0 +1,34 @@
+---
+import Default from '../../layouts/Default.astro';
+import PostList from '../../components/PostList.astro';
+import { getAllPosts, paginate, POSTS_PER_PAGE } from '../../data/content';
+
+export async function getStaticPaths() {
+  const all = await getAllPosts();
+  const totalPages = Math.max(1, Math.ceil(all.length / POSTS_PER_PAGE));
+  return Array.from({ length: totalPages - 1 }, (_, i) => {
+    const page = i + 2;
+    return {
+      params: { page: String(page) },
+      props: { page },
+    };
+  });
+}
+
+interface Props {
+  page: number;
+}
+
+const { page } = Astro.props;
+const allPosts = await getAllPosts();
+const { items, totalPages, currentPage } = paginate(allPosts, page, POSTS_PER_PAGE);
+---
+
+<Default title={`page ${currentPage}`}>
+  <PostList
+    posts={items}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    basePath="/"
+  />
+</Default>

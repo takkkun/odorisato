@@ -1,0 +1,26 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+a.line {
+  color: $font-color;
+
+  &:active,
+  &:hover {
+    opacity: 0.6;
+    transition: opacity $default-transition;
+  }
+}
+
+a.box {
+  border-bottom: 1px transparent solid;
+  display: inline-block;
+  padding: 0 $padding-in-box-link;
+  color: $font-color;
+  text-decoration: none;
+
+  &:active,
+  &:hover {
+    border-color: #ff3c00;
+    transition: border-color $default-transition;
+  }
+}

@@ -1,0 +1,35 @@
+---
+import Default from '../../layouts/Default.astro';
+import PostList from '../../components/PostList.astro';
+import {
+  getCategories,
+  getPostsByCategory,
+  paginate,
+  POSTS_PER_PAGE,
+} from '../../data/content';
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  return categories.map((category) => ({
+    params: { category: category.name },
+    props: { categoryName: category.name },
+  }));
+}
+
+interface Props {
+  categoryName: string;
+}
+
+const { categoryName } = Astro.props;
+const posts = await getPostsByCategory(categoryName);
+const { items, totalPages, currentPage } = paginate(posts, 1, POSTS_PER_PAGE);
+---
+
+<Default title={categoryName}>
+  <PostList
+    posts={items}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    basePath={`/${categoryName}`}
+  />
+</Default>

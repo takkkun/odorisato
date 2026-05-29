@@ -1,0 +1,102 @@
+---
+interface PageItem {
+  num: number;
+  href: string;
+  current: boolean;
+}
+
+interface Props {
+  pages: PageItem[];
+  prevHref: string | null;
+  nextHref: string | null;
+}
+
+const { pages, prevHref, nextHref } = Astro.props;
+const showPagination = pages.length > 1;
+---
+
+{
+  showPagination && (
+    <nav class="pagination">
+      <span class="prev">
+        {prevHref ? (
+          <a href={prevHref} aria-label="previous page">
+            <svg
+              class="icon-page-chevron"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="10,4 6,8 10,12" />
+            </svg>
+          </a>
+        ) : (
+          <span aria-hidden="true">
+            <svg
+              class="icon-page-chevron"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="10,4 6,8 10,12" />
+            </svg>
+          </span>
+        )}
+      </span>
+      {
+        pages.map((p) =>
+          p.current ? (
+            <span class="pagecurrent">
+              <span>{p.num}</span>
+            </span>
+          ) : (
+            <span class="page">
+              <a href={p.href}>
+                {p.num}
+              </a>
+            </span>
+          )
+        )
+      }
+      <span class="next">
+        {nextHref ? (
+          <a href={nextHref} aria-label="next page">
+            <svg
+              class="icon-page-chevron"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="6,4 10,8 6,12" />
+            </svg>
+          </a>
+        ) : (
+          <span aria-hidden="true">
+            <svg
+              class="icon-page-chevron"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6,4 10,8 6,12" />
+            </svg>
+          </span>
+        )}
+      </span>
+    </nav>
+  )
+}

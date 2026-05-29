@@ -1,0 +1,37 @@
+@use 'variables' as *;
+
+@mixin erase-header-ledge {
+  margin-left: $margin-for-header-ledge;
+}
+
+@mixin contain-boxes {
+  width: $container-width;
+  margin: 0 auto;
+  padding: $padding-in-container 0;
+}
+
+@mixin side-by-side {
+  display: inline-block;
+  @include place-margin(right, $margin-between-menu-item - $padding-in-box-link * 2);
+}
+
+@mixin place-margin($direction, $margin) {
+  margin-#{$direction}: $margin;
+
+  &:last-child {
+    margin-#{$direction}: 0;
+  }
+}
+
+@mixin place-notification {
+  @include erase-header-ledge;
+  line-height: 100%;
+  position: absolute;
+  top: -$margin-between-container + $margin-between-menu-item;
+}
+
+@mixin smartphone {
+  @media screen and (max-width: 480px) {
+    @content;
+  }
+}

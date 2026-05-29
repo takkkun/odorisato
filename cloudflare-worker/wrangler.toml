@@ -1,0 +1,13 @@
+name = "odorisato-promote"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+workers_dev = true
+
+# Bind via `wrangler secret put <NAME>` (do NOT commit secrets):
+#   - GITHUB_TOKEN: fine-grained PAT with `Actions: read+write` and
+#     `Contents: read` on odorisato.
+#
+# Plain vars (safe to commit):
+[vars]
+GITHUB_OWNER = "REPLACE_ME"
+GITHUB_REPO = "odorisato"

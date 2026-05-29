@@ -1,0 +1,34 @@
+---
+import type { Category } from '../data/types';
+
+interface Props {
+  categories: Category[];
+  currentPath: string;
+}
+
+const { categories, currentPath } = Astro.props;
+
+const isProfile = currentPath === '/profile' || currentPath.startsWith('/profile/');
+const isCategory = (name: string): boolean => {
+  return currentPath === `/${name}` || currentPath.startsWith(`/${name}/`);
+};
+---
+
+<header id="header">
+  <h1>Odori Sato</h1>
+  <ul>
+    <li><a href="/" class="box">home</a></li>
+    <li class:list={[{ active: isProfile }]}>
+      <a href="/profile" class="box">profile</a>
+    </li>
+    {
+      categories.map((category) => (
+        <li class:list={[{ active: isCategory(category.name) }]}>
+          <a href={`/${category.name}`} class="box">
+            {category.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</header>

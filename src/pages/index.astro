@@ -1,0 +1,17 @@
+---
+import Default from '../layouts/Default.astro';
+import PostList from '../components/PostList.astro';
+import { getAllPosts, paginate, POSTS_PER_PAGE } from '../data/content';
+
+const allPosts = await getAllPosts();
+const { items, totalPages, currentPage } = paginate(allPosts, 1, POSTS_PER_PAGE);
+---
+
+<Default>
+  <PostList
+    posts={items}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    basePath="/"
+  />
+</Default>

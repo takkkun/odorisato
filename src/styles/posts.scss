@@ -1,0 +1,342 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+#posts {
+  display: grid;
+  grid-template-columns: repeat(4, $thumbnail-width + $thumbnail-border-width * 2);
+  gap: $margin-between-thumbnail - $thumbnail-border-width * 2;
+  // borders (4px each side) extend visually outside the cell; offset so the
+  // visible thumbnails align with the container's edges.
+  margin: (-$thumbnail-border-width) 0 0 (-$thumbnail-border-width);
+
+  li {
+    a.thumbnail {
+      background-color: #a9a9a9;
+      border: $thumbnail-border-width $main-background-color solid;
+      width: $thumbnail-width;
+      height: $thumbnail-height;
+      display: block;
+      outline: none;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      &:active,
+      &:hover {
+        border-color: $thumbnail-border-color;
+        transition: border-color $default-transition;
+      }
+    }
+
+    a.thumbnail-for-smartphone {
+      display: none;
+    }
+  }
+}
+
+@include smartphone {
+  #posts {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 9px 10px 19px;
+    width: auto;
+
+    li {
+      a.thumbnail {
+        display: none;
+      }
+
+      a.thumbnail-for-smartphone {
+        display: block;
+        position: relative;
+        width: 100%;
+        padding-top: 60%;
+        overflow: hidden;
+
+        img {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+}
+
+#post {
+  background-color: rgba(255, 255, 255, 0.85);
+  position: fixed;
+  z-index: 950;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+
+  &.is-closing {
+    animation: fade-out 200ms ease forwards;
+  }
+
+  $component-background-color: rgba(255, 255, 255, 0.9);
+
+  div.post-container {
+    position: absolute;
+    inset: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  div.image-frame {
+    --ar: 1;
+    --max-w: 100%;
+
+    position: relative;
+    width: min(calc(100vw - 40px), calc((100vh - 40px) * var(--ar)), var(--max-w));
+    aspect-ratio: var(--ar);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('/loading.gif') center center no-repeat;
+      background-color: $main-background-color;
+      opacity: 1;
+      transition: opacity 200ms ease;
+      pointer-events: none;
+      z-index: 940;
+    }
+
+    &.image-loaded::before {
+      opacity: 0;
+    }
+
+    > img.current-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    a.button {
+      color: $font-color;
+      font-size: 18px;
+      text-decoration: none;
+      line-height: 100%;
+      display: inline-block;
+      outline: none;
+
+      &:active,
+      &:hover {
+        color: rgba($font-color, 0.6);
+        transition: color $default-transition;
+      }
+    }
+
+    h2.caption,
+    a.shift,
+    ul.means {
+      transition: opacity 400ms ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &.controls-ready {
+      h2.caption,
+      a.shift,
+      ul.means {
+        opacity: 1;
+        pointer-events: auto;
+
+        &.hidden {
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+    }
+
+    h2.caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 960;
+      background-color: $component-background-color;
+      margin: 0;
+      padding: 8px 0;
+
+      span {
+        display: block;
+        margin: 0 10px;
+        font-size: $font-size;
+        font-weight: $font-weight;
+        line-height: 160%;
+      }
+    }
+
+    a.shift {
+      position: absolute;
+      top: 0;
+      z-index: 950;
+      height: 100%;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+
+      span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $component-background-color;
+        border-radius: 2px;
+        padding: 7px 9px;
+      }
+
+      .icon-chevron {
+        display: block;
+        width: 12px;
+        height: 16px;
+      }
+    }
+
+    a.previous {
+      left: 0;
+    }
+
+    a.next {
+      right: 0;
+    }
+
+    a.deactive {
+      color: #ccc;
+      cursor: default;
+
+      &:active,
+      &:hover {
+        color: #ccc;
+      }
+    }
+
+    ul.means {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 970;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: stretch;
+
+      li {
+        display: flex;
+        align-items: stretch;
+
+        a {
+          background-color: $component-background-color;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+        }
+
+        .icon-action {
+          display: block;
+          width: 16px;
+          height: 16px;
+        }
+
+        &:first-child a {
+          border-top-left-radius: 2px;
+          border-bottom-left-radius: 2px;
+        }
+
+        &:last-child a {
+          border-top-right-radius: 2px;
+          border-bottom-right-radius: 2px;
+        }
+      }
+
+      li.divider {
+        background-color: rgba($font-color, 0.3);
+        border: 2px solid $component-background-color;
+        border-left: 0;
+        border-right: 0;
+        width: 1px;
+        padding: 0;
+        box-sizing: content-box;
+      }
+    }
+  }
+}
+
+nav.pagination {
+  margin-top: $margin-between-menu-item - $thumbnail-border-width;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  span.page,
+  span.pagecurrent,
+  span.prev,
+  span.next {
+    display: flex;
+    align-items: center;
+    border-radius: 2px;
+
+    span,
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+      padding: 5px;
+      text-decoration: none;
+      box-sizing: content-box;
+    }
+  }
+
+  span.page {
+    span,
+    a {
+      font-size: 12px;
+    }
+
+    a {
+      color: $font-color;
+    }
+  }
+
+  span.pagecurrent {
+    span {
+      background-color: $font-color;
+      border-radius: 2px;
+      color: $main-background-color;
+      font-size: 12px;
+    }
+  }
+
+  span.prev,
+  span.next {
+    span {
+      color: #ccc;
+    }
+
+    a {
+      color: $font-color;
+    }
+
+    .icon-page-chevron {
+      display: block;
+      width: 8px;
+      height: 12px;
+    }
+  }
+}

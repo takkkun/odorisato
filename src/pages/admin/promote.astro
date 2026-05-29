@@ -1,0 +1,151 @@
+---
+import { PUBLIC_WORKER_URL } from 'astro:env/client';
+
+const workerUrl = PUBLIC_WORKER_URL ?? '';
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Promote to production</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 480px;
+        margin: 60px auto;
+        padding: 0 20px;
+        color: #333;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 24px;
+      }
+      .status {
+        background: #f5f5f5;
+        border-radius: 4px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .status dt {
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .status dt:first-child {
+        margin-top: 0;
+      }
+      .status dd {
+        margin: 0 0 0 12px;
+      }
+      .status a {
+        color: #0366d6;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #ff3c00;
+        color: white;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .msg {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      .msg.ok {
+        background: #e6f7e6;
+        color: #1a7f1a;
+      }
+      .msg.err {
+        background: #fdeaea;
+        color: #b00020;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Promote preview to production</h1>
+
+    <dl class="status" id="status">
+      <dt>Preview build</dt>
+      <dd id="preview-status">loading…</dd>
+      <dt>Last promote</dt>
+      <dd id="promote-status">loading…</dd>
+    </dl>
+
+    <button id="promote-btn" type="button" disabled>本番に反映する</button>
+    <div id="message" class="msg" hidden></div>
+
+    <script is:inline define:vars={{ workerUrl }}>
+      const previewStatusEl = document.getElementById('preview-status');
+      const promoteStatusEl = document.getElementById('promote-status');
+      const btn = document.getElementById('promote-btn');
+      const msgEl = document.getElementById('message');
+
+      function renderRun(run) {
+        if (!run) return 'no runs yet';
+        const status = run.conclusion ?? run.status;
+        const when = new Date(run.updated_at).toLocaleString('ja-JP');
+        return `${status} — ${when} (<a href="${run.html_url}" target="_blank" rel="noopener">log</a>)`;
+      }
+
+      function isInProgress(run) {
+        return run != null && (run.status === 'queued' || run.status === 'in_progress');
+      }
+
+      async function refresh() {
+        try {
+          const res = await fetch(`${workerUrl}/status`, { credentials: 'include' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          previewStatusEl.innerHTML = renderRun(data.preview);
+          promoteStatusEl.innerHTML = renderRun(data.promote);
+
+          const busy = isInProgress(data.preview) || isInProgress(data.promote);
+          btn.disabled = busy;
+          btn.textContent = busy ? '実行中…' : '本番に反映する';
+        } catch (err) {
+          previewStatusEl.textContent = `status fetch failed: ${err.message}`;
+          promoteStatusEl.textContent = '';
+        }
+      }
+
+      btn.addEventListener('click', async () => {
+        msgEl.hidden = true;
+        btn.disabled = true;
+        try {
+          const res = await fetch(`${workerUrl}/promote`, {
+            method: 'POST',
+            credentials: 'include',
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          msgEl.textContent = '本番反映を開始しました。';
+          msgEl.className = 'msg ok';
+          msgEl.hidden = false;
+          setTimeout(refresh, 2000);
+        } catch (err) {
+          msgEl.textContent = `エラー: ${err.message}`;
+          msgEl.className = 'msg err';
+          msgEl.hidden = false;
+          btn.disabled = false;
+        }
+      });
+
+      refresh();
+      setInterval(refresh, 15000);
+    </script>
+  </body>
+</html>

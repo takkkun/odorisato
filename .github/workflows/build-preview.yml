@@ -1,0 +1,70 @@
+name: Build preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: Trigger source (manual / microcms)
+        required: false
+        default: manual
+  repository_dispatch:
+    types: [build-preview]
+
+concurrency:
+  group: preview-build
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.14.1
+          cache: npm
+
+      - name: Restore Astro/Vite caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.astro
+            node_modules/.vite
+          key: astro-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            astro-${{ runner.os }}-
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
+          MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
+          PUBLIC_WORKER_URL: ${{ secrets.PUBLIC_WORKER_URL }}
+
+      - name: Deploy to Cloudflare Pages (preview)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          npx wrangler@4 pages deploy dist \
+            --project-name=odorisato-preview \
+            --branch=main \
+            --commit-hash="${GITHUB_SHA}"
+
+      - name: Snapshot built dist into pending-production branch
+        env:
+          TOKEN: ${{ github.token }}
+        working-directory: dist
+        run: |
+          git init -b main
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Build snapshot ${GITHUB_SHA:0:7}"
+          git push -f "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" HEAD:pending-production

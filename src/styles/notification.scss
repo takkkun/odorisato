@@ -1,0 +1,24 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+#notification {
+  position: relative;
+
+  > p {
+    @include place-notification;
+    font-weight: $font-weight;
+  }
+}
+
+@include smartphone {
+  #notification {
+    position: static;
+    margin: 19px 10px 0;
+
+    > p {
+      position: static;
+      margin: 0;
+      line-height: 160%;
+    }
+  }
+}

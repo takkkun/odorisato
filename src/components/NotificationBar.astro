@@ -1,0 +1,16 @@
+---
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+const hasContent = Boolean(content && content.trim());
+---
+
+{
+  hasContent && (
+    <div id="notification">
+      <p>{content}</p>
+    </div>
+  )
+}

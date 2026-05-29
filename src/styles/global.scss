@@ -1,0 +1,102 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+body {
+  background-color: $main-background-color;
+  color: $font-color;
+  font-family: $font-family;
+  font-size: $font-size;
+  font-weight: $font-weight;
+  margin: 0;
+}
+
+#body > * {
+  animation: fade-in 400ms ease;
+}
+
+h1,
+p,
+ul {
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+#container {
+  width: $container-width;
+  margin: $margin-between-container auto;
+}
+
+#header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: $margin-between-container;
+
+  h1 {
+    font-family: Montserrat, sans-serif;
+    font-size: 200%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 100%;
+    margin-left: $margin-for-header-ledge;
+  }
+
+  ul {
+    display: flex;
+    gap: $margin-between-menu-item - $padding-in-box-link * 2;
+    margin-left: $margin-between-menu-item * 2;
+
+    li {
+      font-family: Montserrat, sans-serif;
+
+      &.active a {
+        border-color: #ff3c00;
+      }
+    }
+  }
+}
+
+@include smartphone {
+  #container {
+    width: 100%;
+    margin: 10px auto;
+  }
+
+  #header {
+    flex-direction: column;
+    margin: 10px;
+
+    h1 {
+      margin-left: 0;
+    }
+
+    ul {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  }
+}
