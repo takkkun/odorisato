@@ -75,13 +75,17 @@ function setupAutoHide(targets: HTMLElement[], signal: AbortSignal): void {
 }
 
 function closeViewer(fallbackHref: string): void {
-  const hasSameOriginHistory =
-    window.history.length > 1 &&
-    document.referrer !== '' &&
-    new URL(document.referrer).origin === window.location.origin;
+  // The overlayRouter sets history.state to { overlay: true } when it
+  // opened the post via pushState. In that case history.back unwinds to
+  // the list page we came from. For direct landings the state is null
+  // (or unrelated) and we fall back to a normal navigation.
+  const fromPushState =
+    typeof window.history.state === 'object' &&
+    window.history.state !== null &&
+    (window.history.state as { overlay?: boolean }).overlay === true;
 
   const finish = (): void => {
-    if (hasSameOriginHistory) {
+    if (fromPushState) {
       window.history.back();
     } else {
       window.location.href = fallbackHref;
