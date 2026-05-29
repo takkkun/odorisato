@@ -1,7 +1,13 @@
 ---
 import Default from '../../layouts/Default.astro';
 import PostList from '../../components/PostList.astro';
-import { getAllPosts, paginate, POSTS_PER_PAGE } from '../../data/content';
+import {
+  getAllPosts,
+  imageDefaultSrc,
+  imageSrcset,
+  paginate,
+  POSTS_PER_PAGE,
+} from '../../data/content';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
@@ -58,8 +64,8 @@ const { items: bgItems, totalPages: bgTotalPages, currentPage: bgCurrentPage } =
         {
           firstImage && (
             <img
-              src={`${firstImage.url}?w=1600`}
-              srcset={`${firstImage.url}?w=800 800w, ${firstImage.url}?w=1200 1200w, ${firstImage.url}?w=1600 1600w, ${firstImage.url}?w=2400 2400w`}
+              src={imageDefaultSrc(firstImage.url, firstImage.width)}
+              srcset={imageSrcset(firstImage.url, firstImage.width)}
               sizes="(max-width: 480px) 100vw, calc(100vw - 40px)"
               width={firstImage.width}
               height={firstImage.height}

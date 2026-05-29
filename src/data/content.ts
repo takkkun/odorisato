@@ -88,3 +88,21 @@ export function paginate<T>(
     currentPage,
   };
 }
+
+// Image responsive helpers.
+// Standard breakpoints; only those strictly below the natural width are
+// emitted, with the natural width itself as the largest entry. This avoids
+// asking microCMS to upscale images and avoids wasted bandwidth for posts
+// whose original is smaller than 2400px wide.
+const SRCSET_WIDTHS = [400, 800, 1200, 1600, 2400];
+const DEFAULT_SRC_WIDTH = 1200;
+
+export function imageSrcset(url: string, naturalWidth: number): string {
+  const widths = SRCSET_WIDTHS.filter((w) => w < naturalWidth);
+  widths.push(naturalWidth);
+  return widths.map((w) => `${url}?w=${w} ${w}w`).join(', ');
+}
+
+export function imageDefaultSrc(url: string, naturalWidth: number): string {
+  return `${url}?w=${Math.min(DEFAULT_SRC_WIDTH, naturalWidth)}`;
+}

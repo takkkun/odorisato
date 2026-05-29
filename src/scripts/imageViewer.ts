@@ -129,19 +129,28 @@ export function initImageViewer(): void {
     frame.classList.add('controls-ready');
   };
 
-  const buildSrcset = (url: string): string =>
-    `${url}?w=800 800w, ${url}?w=1200 1200w, ${url}?w=1600 1600w, ${url}?w=2400 2400w`;
+  const SRCSET_WIDTHS = [400, 800, 1200, 1600, 2400];
+  const DEFAULT_SRC_WIDTH = 1200;
+
+  const buildSrcset = (url: string, naturalWidth: number): string => {
+    const widths = SRCSET_WIDTHS.filter((w) => w < naturalWidth);
+    widths.push(naturalWidth);
+    return widths.map((w) => `${url}?w=${w} ${w}w`).join(', ');
+  };
+
+  const buildDefaultSrc = (url: string, naturalWidth: number): string =>
+    `${url}?w=${Math.min(DEFAULT_SRC_WIDTH, naturalWidth)}`;
 
   const updateState = (): void => {
     if (img && images[index]) {
       const current = images[index];
-      const targetSrc = `${current.url}?w=1600`;
+      const targetSrc = buildDefaultSrc(current.url, current.width);
       frame.style.setProperty('--ar', String(current.width / current.height));
       frame.style.setProperty('--max-w', `${current.width}px`);
       if (original) original.href = current.url;
       if (img.src !== new URL(targetSrc, window.location.href).href) {
         frame.classList.remove('image-loaded');
-        img.srcset = buildSrcset(current.url);
+        img.srcset = buildSrcset(current.url, current.width);
         img.src = targetSrc;
         img.width = current.width;
         img.height = current.height;
