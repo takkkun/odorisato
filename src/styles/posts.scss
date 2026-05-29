@@ -86,6 +86,11 @@
   height: 100dvh;
   overflow: hidden;
   isolation: isolate;
+  // Suppress touch-driven scroll/zoom while the overlay is open so
+  // the body underneath doesn't pan with finger gestures on iOS.
+  // Children declare their own touch-action (default auto) so taps
+  // still reach buttons.
+  touch-action: none;
 
   // In landscape the notch / Dynamic Island sits on one of the long
   // edges. Pull the overlay in to the safe area on all sides so the

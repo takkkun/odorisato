@@ -8,17 +8,10 @@ function isModifierClick(e: MouseEvent): boolean {
 }
 
 function updateBodyScrollLock(): void {
-  const root = document.documentElement;
-  if (document.querySelector('#post')) {
-    const scrollbarWidth = window.innerWidth - root.clientWidth;
-    if (scrollbarWidth > 0) {
-      root.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    root.style.overflow = 'hidden';
-  } else {
-    root.style.overflow = '';
-    root.style.paddingRight = '';
-  }
+  // Touch / pointer scroll while the overlay is open is suppressed via
+  // CSS (`touch-action: none` on #post) — touching the overlay never
+  // reaches the underlying body. No html-level overflow change is
+  // applied, which was breaking iOS Safari's safe-area canvas paint.
 }
 
 function removeOverlay(animated: boolean = true): void {
