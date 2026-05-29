@@ -17,10 +17,6 @@ pnpm-debug.log*
 .env
 .env.production
 
-# migration script state / logs
-/tools/migrate/state.json
-/tools/migrate/migrate.log
-
 # macOS-specific files
 .DS_Store
 
