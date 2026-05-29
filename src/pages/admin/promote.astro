@@ -108,7 +108,7 @@ const workerUrl = PUBLIC_WORKER_URL ?? '';
 
       async function refresh() {
         try {
-          const res = await fetch(`${workerUrl}/status`, { credentials: 'include' });
+          const res = await fetch(`${workerUrl}/status`);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
           previewStatusEl.innerHTML = renderRun(data.preview);
@@ -129,7 +129,6 @@ const workerUrl = PUBLIC_WORKER_URL ?? '';
         try {
           const res = await fetch(`${workerUrl}/promote`, {
             method: 'POST',
-            credentials: 'include',
           });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           msgEl.textContent = '本番反映を開始しました。';
