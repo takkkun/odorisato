@@ -129,15 +129,20 @@ export function initImageViewer(): void {
     frame.classList.add('controls-ready');
   };
 
+  const buildSrcset = (url: string): string =>
+    `${url}?w=800 800w, ${url}?w=1200 1200w, ${url}?w=1600 1600w, ${url}?w=2400 2400w`;
+
   const updateState = (): void => {
     if (img && images[index]) {
       const current = images[index];
+      const targetSrc = `${current.url}?w=1600`;
       frame.style.setProperty('--ar', String(current.width / current.height));
       frame.style.setProperty('--max-w', `${current.width}px`);
       if (original) original.href = current.url;
-      if (img.src !== current.url) {
+      if (img.src !== new URL(targetSrc, window.location.href).href) {
         frame.classList.remove('image-loaded');
-        img.src = current.url;
+        img.srcset = buildSrcset(current.url);
+        img.src = targetSrc;
         img.width = current.width;
         img.height = current.height;
       } else if (img.complete && img.naturalWidth > 0) {

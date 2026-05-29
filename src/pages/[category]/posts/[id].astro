@@ -71,7 +71,9 @@ const { items: bgItems, totalPages: bgTotalPages, currentPage: bgCurrentPage } =
         {
           firstImage && (
             <img
-              src={firstImage.url}
+              src={`${firstImage.url}?w=1600`}
+              srcset={`${firstImage.url}?w=800 800w, ${firstImage.url}?w=1200 1200w, ${firstImage.url}?w=1600 1600w, ${firstImage.url}?w=2400 2400w`}
+              sizes="(max-width: 480px) 100vw, calc(100vw - 40px)"
               width={firstImage.width}
               height={firstImage.height}
               alt={post.caption || ''}
