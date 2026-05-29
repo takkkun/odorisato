@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://odorisato.com',
+  trailingSlash: 'always',
   integrations: [sitemap()],
   env: {
     schema: {

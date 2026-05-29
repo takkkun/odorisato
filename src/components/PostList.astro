@@ -13,10 +13,10 @@ const { posts, currentPage, totalPages, basePath } = Astro.props;
 
 function pageHref(page: number): string {
   if (page === 1) {
-    return basePath === '/' ? '/' : basePath;
+    return basePath === '/' ? '/' : `${basePath}/`;
   }
   const prefix = basePath === '/' ? '' : basePath;
-  return `${prefix}/page/${page}`;
+  return `${prefix}/page/${page}/`;
 }
 
 const pages = Array.from({ length: totalPages }, (_, i) => ({
@@ -28,7 +28,7 @@ const prevHref = currentPage > 1 ? pageHref(currentPage - 1) : null;
 const nextHref = currentPage < totalPages ? pageHref(currentPage + 1) : null;
 
 function postHref(postId: string): string {
-  return basePath === '/' ? `/posts/${postId}` : `${basePath}/posts/${postId}`;
+  return basePath === '/' ? `/posts/${postId}/` : `${basePath}/posts/${postId}/`;
 }
 ---
 

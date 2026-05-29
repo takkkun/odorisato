@@ -27,7 +27,7 @@ const { post, categoryName } = Astro.props;
 
 const firstImage = post.images[0];
 const basePath = `/${categoryName}`;
-const closeHref = basePath;
+const closeHref = `${basePath}/`;
 
 const imagesPayload = post.images.map((img) => ({
   url: img.url,

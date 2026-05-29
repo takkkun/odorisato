@@ -19,12 +19,12 @@ const isCategory = (name: string): boolean => {
   <ul>
     <li><a href="/" class="box">home</a></li>
     <li class:list={[{ active: isProfile }]}>
-      <a href="/profile" class="box">profile</a>
+      <a href="/profile/" class="box">profile</a>
     </li>
     {
       categories.map((category) => (
         <li class:list={[{ active: isCategory(category.name) }]}>
-          <a href={`/${category.name}`} class="box">
+          <a href={`/${category.name}/`} class="box">
             {category.name}
           </a>
         </li>
