@@ -21,6 +21,12 @@
   }
 }
 
+html {
+  // Paint the canvas (including iOS safe-area gutters) so the page
+  // background extends edge-to-edge with viewport-fit=cover.
+  background-color: $main-background-color;
+}
+
 body {
   background-color: $main-background-color;
   color: $font-color;
@@ -28,6 +34,8 @@ body {
   font-size: $font-size;
   font-weight: $font-weight;
   margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #body > * {
@@ -83,7 +91,14 @@ ul {
 @include smartphone {
   #container {
     width: 100%;
-    margin: 10px auto;
+    margin: 0;
+    box-sizing: border-box;
+    // Respect iOS safe-area on every side. Vertical edges keep a minimum
+    // 10px breathing room when safe-area-inset is 0 (non-notch devices).
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    padding-left: env(safe-area-inset-left, 0px);
   }
 
   #header {
