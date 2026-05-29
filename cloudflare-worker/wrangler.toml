@@ -9,5 +9,5 @@ workers_dev = true
 #
 # Plain vars (safe to commit):
 [vars]
-GITHUB_OWNER = "REPLACE_ME"
+GITHUB_OWNER = "takkkun"
 GITHUB_REPO = "odorisato"
