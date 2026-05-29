@@ -24,6 +24,11 @@ export default defineConfig({
         access: 'public',
         optional: true,
       }),
+      PUBLIC_GA4_MEASUREMENT_ID: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+      }),
     },
   },
 });

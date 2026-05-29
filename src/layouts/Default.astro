@@ -6,9 +6,12 @@ import '../styles/notification.scss';
 import '../styles/profile.scss';
 import '../styles/posts.scss';
 
+import { PUBLIC_GA4_MEASUREMENT_ID } from 'astro:env/client';
 import Header from '../components/Header.astro';
 import NotificationBar from '../components/NotificationBar.astro';
 import { getCategories, getNotification } from '../data/content';
+
+const ga4Id = PUBLIC_GA4_MEASUREMENT_ID ?? '';
 
 interface Props {
   title?: string;
@@ -49,6 +52,18 @@ const showNotification = !Astro.url.pathname.startsWith('/profile');
     <meta property="og:type" content="website" />
     {description && <meta property="og:description" content={description} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
+    <script is:inline define:vars={{ ga4Id }}>
+      if (ga4Id && window.location.hostname === 'odorisato.com') {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', ga4Id);
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4Id;
+        document.head.appendChild(s);
+      }
+    </script>
   </head>
   <body>
     <div id="container">
