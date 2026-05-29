@@ -75,7 +75,13 @@
   background-color: rgba(255, 255, 255, 0.85);
   position: fixed;
   z-index: 950;
-  inset: 0;
+  // Extend out into the safe-area inset regions (notch / home indicator
+  // on iOS). Negative offsets make the overlay span the full screen
+  // even when the layout viewport excludes the safe areas.
+  top: calc(env(safe-area-inset-top, 0px) * -1);
+  right: calc(env(safe-area-inset-right, 0px) * -1);
+  bottom: calc(env(safe-area-inset-bottom, 0px) * -1);
+  left: calc(env(safe-area-inset-left, 0px) * -1);
   overflow: hidden;
   isolation: isolate;
 
